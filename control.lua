@@ -9,8 +9,12 @@ local function find_empty_stack(player)
       return inventory[i]
     end
   end
-  -- TODO: handle this somehow by finding another free slot somewhere
-  player.print ("Failed to find free inventory slot")
+  -- No free place in inventory, create item on ground
+  local entity = player.surface.create_entity{name = "item-on-ground", position = player.position, force=player.force, stack={name="BlueprintAlignment-blueprint-holder"}}
+  if entity ~= nil then
+    return entity.stack
+  end
+  player.print ("Failed to find free inventory slot and item-on-ground entity creation fail")
   return nil
 end
 
