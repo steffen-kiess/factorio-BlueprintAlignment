@@ -60,7 +60,7 @@ script.on_event(defines.events.on_put_item, function (event)
 
   -- Parse the blueprint label (search for last () block), return if none found
   --player.print ("BP " .. serpent.block(blueprint.label))
-  parsed = alignment_attribute.parse_blueprint(blueprint)
+  parsed = alignment_attribute.parse_blueprint(player, blueprint)
 
   local globaloffsetx = 1
   local globaloffsety = 1
@@ -95,14 +95,17 @@ script.on_event(defines.events.on_put_item, function (event)
   pos.x = math.floor((pos.x - offsetx) / parsed.Align[1] + 0.5) * parsed.Align[1] + offsetx
   pos.y = math.floor((pos.y - offsety) / parsed.Align[2] + 0.5) * parsed.Align[2] + offsety
 
-  player.cursor_stack.build_blueprint({
+  local ghosts = player.cursor_stack.build_blueprint({
     surface = player.surface,
     force = player.force,
     position = pos,
     force_build = event.shift_build,
     direction = event.direction,
   })
-
+  -- Raise on_build_entity for all created (ghost) entities. This will also remove the BlueprintAlignment-Info ghost (and hopefully similar ghosts from other mods)
+  for _, entity in pairs(ghosts) do
+    script.raise_event(defines.events.on_built_entity, { created_entity = entity, player_index = player.index, stack = nil })
+  end
 
   -- Suppress the normal blueprint building by replacing the blueprint with a temporary item
   local stack = find_empty_stack(player)
@@ -127,5 +130,19 @@ script.on_event(defines.events.on_player_cursor_stack_changed, function (event)
     stack.swap_stack(player.cursor_stack)
     player.cursor_stack.swap_stack(stack.get_inventory(defines.inventory.item_main)[1])
     stack.set_stack(nil)
+  end
+end)
+
+
+script.on_event(defines.events.on_built_entity, function (event)
+  local entity = event.created_entity
+  --local player = game.players[event.player_index]
+  --player.print ('BUILDT ' .. serpent.block(event.tick) .. ' ' .. entity.type .. ' ' .. serpent.block(event.stack))
+  --if entity.valid and entity.type == "entity-ghost" then
+  --  player.print ('BUILD ' .. entity.ghost_name)
+  --end
+  if entity.valid and entity.type == "entity-ghost" and entity.ghost_name == "BlueprintAlignment-Info" then
+    entity.destroy()
+    --player.print ('Removing ghost')
   end
 end)
