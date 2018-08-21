@@ -1,3 +1,7 @@
+alignment_attribute = require ("alignment_attribute")
+require ("gui")
+
+
 require ("util")
 -- require ("serpent")
 
@@ -10,37 +14,29 @@ local function find_empty_stack(player)
     end
   end
   -- No free place in inventory, create item on ground
+  -- Search for free position to avoid creating an item on a belt
+  for x = -10,10 do
+    for y = -10,10 do
+      local count = player.surface.count_entities_filtered{position={x=player.position.x+x,y=player.position.y+y}}
+      --player.print(x .. " " .. y .. " " .. count)
+      if count == 0 then
+        local entity = player.surface.create_entity{name = "item-on-ground", position = player.position, force=player.force, stack={name="BlueprintAlignment-blueprint-holder"}}
+        if entity ~= nil and entity.valid then
+          return entity.stack
+        else
+          player.print ("item-on-ground entity creation failed")
+          return nil
+        end
+      end
+    end
+  end
+  -- Fall back to where the player stands. This will fail when the player is on a belt
   local entity = player.surface.create_entity{name = "item-on-ground", position = player.position, force=player.force, stack={name="BlueprintAlignment-blueprint-holder"}}
-  if entity ~= nil then
+  if entity ~= nil and entity.valid then
     return entity.stack
   end
-  player.print ("Failed to find free inventory slot and item-on-ground entity creation fail")
+  player.print ("Failed to find free inventory slot and item-on-ground entity creation failed")
   return nil
-end
-
-
-local function gsplit(s,sep)
-  local lasti, done, g = 1, false, s:gmatch('(.-)'..sep..'()')
-  return function()
-    if done then
-      return
-    end
-    local v,i = g()
-    if s == '' or sep == '' then
-      done = true
-      return s
-    end
-    if v == nil then
-      done = true
-      return s:sub(lasti)
-    end
-    lasti = i
-    return v
-  end
-end
-
-local function trim(s)
-   return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 
@@ -64,88 +60,40 @@ script.on_event(defines.events.on_put_item, function (event)
 
   -- Parse the blueprint label (search for last () block), return if none found
   --player.print ("BP " .. serpent.block(blueprint.label))
-  label = blueprint.label
-  if label == nil then return end
-  local pos = (label:reverse()):find("(", 1, true)
-  if pos == nil then return end
-  local str = label:sub(-pos+1)
-  pos = str:find(")", 1, true)
-  if pos == nil then return end
-  str = str:sub(1,pos-1)
-  --player.print ("STR " .. serpent.block(str))
+  parsed = alignment_attribute.parse_blueprint(blueprint)
 
   local globaloffsetx = 1
   local globaloffsety = 1
 
-  local align = nil
-  local alignx = nil
-  local aligny = nil
+  if parsed.Align[1] == 0 and parsed.Align[2] == 0 then return end
 
-  local offsetx = 0
-  local offsety = 0
+  if parsed.Align[1] == 0 then parsed.Align[1] = 0.5 end
+  if parsed.Align[2] == 0 then parsed.Align[2] = 0.5 end
 
-  local roffsetx = 0
-  local roffsety = 0
-
-  for part in gsplit(str, ',') do
-    -- player.print ("S " .. serpent.block(part))
-    pos = part:find("=")
-    if pos ~= nil then
-      local name = part:sub(1,pos-1)
-      local value = part:sub(pos+1)
-      name = trim (name)
-      -- player.print ("SN " .. serpent.block(name))
-      -- player.print ("SV " .. serpent.block(value))
-      if name == "align" and tonumber(value) ~= nil then
-        align = tonumber(value)
-      elseif name == "alignx" and tonumber(value) ~= nil then
-        alignx = tonumber(value)
-      elseif name == "aligny" and tonumber(value) ~= nil then
-        aligny = tonumber(value)
-      elseif name == "offsetx" and tonumber(value) ~= nil then
-        offsetx = tonumber(value)
-      elseif name == "offsety" and tonumber(value) ~= nil then
-        offsety = tonumber(value)
-      elseif name == "roffsetx" and tonumber(value) ~= nil then
-        roffsetx = tonumber(value)
-      elseif name == "roffsety" and tonumber(value) ~= nil then
-        roffsety = tonumber(value)
-      end
-    end
-  end
-
-  if alignx == nil then alignx = align end
-  if aligny == nil then aligny = align end
-
-  if alignx == nil and aligny == nil then return end
-
-  if alignx == nil then alignx = 0.5 end
-  if aligny == nil then aligny = 0.5 end
-
-  offsetx = offsetx + globaloffsetx
-  offsety = offsety + globaloffsety
+  local offsetx = parsed.Offset[1] + globaloffsetx
+  local offsety = parsed.Offset[2] + globaloffsety
 
   if event.direction == 0 then
-    offsetx = offsetx - roffsetx
-    offsety = offsety - roffsety
+    offsetx = offsetx - parsed.Center[1]
+    offsety = offsety - parsed.Center[2]
   elseif event.direction == 2 then
-    offsetx = offsetx + roffsety
-    offsety = offsety - roffsetx
+    offsetx = offsetx + parsed.Center[2]
+    offsety = offsety - parsed.Center[1]
   elseif event.direction == 4 then
-    offsetx = offsetx + roffsetx
-    offsety = offsety + roffsety
+    offsetx = offsetx + parsed.Center[1]
+    offsety = offsety + parsed.Center[2]
   elseif event.direction == 6 then
-    offsetx = offsetx - roffsety
-    offsety = offsety + roffsetx
+    offsetx = offsetx - parsed.Center[2]
+    offsety = offsety + parsed.Center[1]
   end  
 
-  -- player.print ("ALIGN: " .. serpent.block(alignx) .. " " .. serpent.block(aligny) .. " " .. serpent.block(offsetx) .. " " .. serpent.block(offsety))
+  -- player.print ("ALIGN: " .. serpent.block(parsed.Align[1]) .. " " .. serpent.block(parsed.Align[2]) .. " " .. serpent.block(offsetx) .. " " .. serpent.block(offsety))
 
   -- Build the blueprint, properly aligned
 
   local pos = table.deepcopy(event.position)
-  pos.x = math.floor((pos.x - offsetx) / alignx + 0.5) * alignx + offsetx
-  pos.y = math.floor((pos.y - offsety) / aligny + 0.5) * aligny + offsety
+  pos.x = math.floor((pos.x - offsetx) / parsed.Align[1] + 0.5) * parsed.Align[1] + offsetx
+  pos.y = math.floor((pos.y - offsety) / parsed.Align[2] + 0.5) * parsed.Align[2] + offsety
 
   player.cursor_stack.build_blueprint({
     surface = player.surface,
