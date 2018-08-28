@@ -235,6 +235,9 @@ function this.update_blueprint_label(player, blueprint, data_old, data)
 end
 
 function this.update_blueprint_entity(player, blueprint, data_old, data)
+  -- Only store an entity if StoreAsLabel is false and either Align[1] or Align[2] is nonzero
+  local storeAsEntity = (not data['StoreAsLabel']) and (data.Align[1] ~= 0 or data.Align[2] ~= 0)
+  
   entities = blueprint.get_blueprint_entities()
   idx = nil
   maxId = 0
@@ -246,9 +249,9 @@ function this.update_blueprint_entity(player, blueprint, data_old, data)
     end
   end
   -- Return if StoreAsLabel is true and there is no existing BlueprintAlignment-Info
-  if idx == nil and data['StoreAsLabel'] then return end
+  if idx == nil and not storeAsEntity then return end
 
-  if data['StoreAsLabel'] or (data.Align[1] == 0 and data.Align[2] == 0) then
+  if not storeAsEntity then
     -- Delete an existing BlueprintAlignment-Info
     table.remove(entities, idx)
     blueprint.set_blueprint_entities(entities)
