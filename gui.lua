@@ -336,8 +336,8 @@ local function shift_blueprint(player, blueprint)
     alignment_attribute.update_blueprint(player, blueprint, data_old, data)
   end
   
-  shiftX = -data.Center[1]
-  shiftY = -data.Center[2]
+  shiftX = math.floor(-data.Center[1])
+  shiftY = math.floor(-data.Center[2])
   if shiftX ~= 0 or shiftY ~= 0 then
     entities = blueprint.get_blueprint_entities()
     if entities ~= nil then
