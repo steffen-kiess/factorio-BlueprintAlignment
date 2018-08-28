@@ -1,3 +1,8 @@
+Version 0.0.3
+=============
+- Fix bug which causes entities to be deleted sometimes when editing a blueprint
+- Add mod setting with global X/Y offset
+
 Version 0.0.2
 =============
 - GUI for editing blueprint alignment
