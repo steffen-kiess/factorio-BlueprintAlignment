@@ -30,6 +30,15 @@ You can set the following properties:
   will be stored in the blueprint label. Otherwise (the default) the
   properties will be stored in a special entity in the blueprint.
 
+Mod settings
+------------
+
+There is a per-savegame setting for a global X/Y offset. This offset will be
+applied to all blueprints. (This can be useful if you want to share
+blueprints across savegames but the savegames have used different starting
+points.) The default value for the alignment is 1, which means that the
+center of a rail can be aligned to an even number. (If the global offset is
+even, the corners of straight rails can be aligned.)
 
 Example
 -------

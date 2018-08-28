@@ -62,8 +62,8 @@ script.on_event(defines.events.on_put_item, function (event)
   --player.print ("BP " .. serpent.block(blueprint.label))
   parsed = alignment_attribute.parse_blueprint(player, blueprint)
 
-  local globaloffsetx = 1
-  local globaloffsety = 1
+  local globaloffsetx = settings.global["BlueprintAlignment-global-offset-x"].value
+  local globaloffsety = settings.global["BlueprintAlignment-global-offset-y"].value
 
   if parsed.Align[1] == 0 and parsed.Align[2] == 0 then return end
 
