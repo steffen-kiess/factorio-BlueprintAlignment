@@ -1,3 +1,8 @@
+Version 0.0.4
+=============
+- Fix some bugs with blueprint without entities or clicking on the icon
+  without any selected blueprint
+
 Version 0.0.3
 =============
 - Fix bug which causes entities to be deleted sometimes when editing a blueprint
