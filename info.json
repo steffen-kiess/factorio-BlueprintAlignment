@@ -6,5 +6,5 @@
   "author": "steffenk",
   "homepage": "https://github.com/steffen-kiess/factorio-BlueprintAlignment",
   "dependencies": ["base >= 0.16.0"],
-  "description": "Allows enforcing a certain alignment for some blueprints. The alignment is specified in the blueprint label."
+  "description": "Allows enforcing a certain alignment for some blueprints."
 }
