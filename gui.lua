@@ -224,7 +224,9 @@ local function update_blueprint(player)
     if copy_label ~= nil then blueprint.label = copy_label end
     if copy_label_color ~= nil then blueprint.label_color = copy_label_color end
     blueprint.allow_manual_label_change = copy_allow_manual_label_change
-    blueprint.blueprint_icons = copy_blueprint_icons
+    if copy_entities ~= nil or copy_tiles ~= nil then -- When the blueprint is empty, the icons cannot be copied
+      blueprint.blueprint_icons = copy_blueprint_icons
+    end
 
     -- Opening the GUI twice avoids problems with attach-notes mod
     player.opened = item
