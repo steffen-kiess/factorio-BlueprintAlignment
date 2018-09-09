@@ -93,6 +93,16 @@ end
 
 local function open_bp_al_gui(player)
   local cache = get_cache(player)
+  if cache.item == nil then
+    -- For some reason open_bp_al_gui() has beed called while there is no blueprint selected
+    player.print ("[BlueprintAlignment] Warning: No blueprint found")
+    return
+  end
+  if not cache.item.valid_for_read then
+    -- For some reason open_bp_al_gui() has beed called with an invalid item
+    player.print ("[BlueprintAlignment] Warning: Blueprint not valid")
+    return
+  end
   if cache.gui ~= nil then
     close_bp_al_gui(player)
   end
@@ -187,6 +197,16 @@ local function update_blueprint(player)
   --player.print('update_blueprint ' .. serpent.block(cache.gui.attr))
   local cache = get_cache(player)
   item = cache.item
+
+  if item == nil then
+    player.print ("[BlueprintAlignment] Warning: No blueprint found in update_blueprint()")
+    return
+  end
+  if not item.valid_for_read then
+    player.print ("[BlueprintAlignment] Warning: Blueprint not valid in update_blueprint()")
+    return
+  end
+
   --player.print('Update 1')
   -- suppress open_bp_gui and close_bp_gui while updating the blueprint
   cache.suppress_reopen = item
