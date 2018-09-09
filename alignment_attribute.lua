@@ -70,23 +70,25 @@ function this.parse_blueprint(player, blueprint)
   local align = 0
 
   entities = blueprint.get_blueprint_entities()
-  for _, entity in pairs(entities) do
-    if entity.name == 'BlueprintAlignment-Info' then
-      jsonStr = entity.alert_parameters.alert_message
-      local status, res = pcall(function () return json.decode(jsonStr) end)
-      if not status then
-        player.print('[BlueprintAlignment] Error parsing JSON: ' .. res)
-        return data
-      else
-        --player.print('[BlueprintAlignment] RES: ' .. serpent.block(res))
-        res.Center = { entity.position.x, entity.position.y }
-        res.StoreAsLabel = false
-        local status2, res2 = pcall(function () return this.cleanup(res) end)
-        if not status2 then
-          player.print('[BlueprintAlignment] Error checking JSON: ' .. res2)
+  if entities ~= nil then
+    for _, entity in pairs(entities) do
+      if entity.name == 'BlueprintAlignment-Info' then
+        jsonStr = entity.alert_parameters.alert_message
+        local status, res = pcall(function () return json.decode(jsonStr) end)
+        if not status then
+          player.print('[BlueprintAlignment] Error parsing JSON: ' .. res)
           return data
         else
-          return res2
+          --player.print('[BlueprintAlignment] RES: ' .. serpent.block(res))
+          res.Center = { entity.position.x, entity.position.y }
+          res.StoreAsLabel = false
+          local status2, res2 = pcall(function () return this.cleanup(res) end)
+          if not status2 then
+            player.print('[BlueprintAlignment] Error checking JSON: ' .. res2)
+            return data
+          else
+            return res2
+          end
         end
       end
     end
@@ -241,12 +243,16 @@ function this.update_blueprint_entity(player, blueprint, data_old, data)
   entities = blueprint.get_blueprint_entities()
   idx = nil
   maxId = 0
-  for index, entity in pairs(entities) do
-    maxId = math.max(maxId, entity.entity_number)
-    if entity.name == 'BlueprintAlignment-Info' then
-      idx = index
-      break
+  if entities ~= nil then
+    for index, entity in pairs(entities) do
+      maxId = math.max(maxId, entity.entity_number)
+      if entity.name == 'BlueprintAlignment-Info' then
+        idx = index
+        break
+      end
     end
+  else
+    entities = {}
   end
   -- Return if StoreAsLabel is true and there is no existing BlueprintAlignment-Info
   if idx == nil and not storeAsEntity then return end
