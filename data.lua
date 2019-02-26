@@ -54,7 +54,7 @@ local blueprintAlignmentInfo = {
     render_no_network_icon = false,
     render_no_power_icon = false,
   },
-  energy_usage_per_tick = "0W",
+  energy_usage_per_tick = "1W",
   sprite = sprite,
   audible_distance_modifier = 0,
   maximum_polyphony = 0,
