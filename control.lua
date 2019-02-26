@@ -9,7 +9,7 @@ require ("util")
 local function find_empty_stack(player)
   local inventory = player.get_main_inventory()
   for i = 1, #inventory do
-    if not inventory[i].valid_for_read then
+    if not inventory[i].valid_for_read and inventory[i].can_set_stack({name = "BlueprintAlignment-blueprint-holder", count = 1}) then
       return inventory[i]
     end
   end
