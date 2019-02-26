@@ -1,3 +1,9 @@
+Version 0.0.5
+=============
+- Update for factorio version 0.17. Note that currently building an aligned
+  blueprint from a blueprint book which is linked to the blueprint library
+  will cause the blueprint to be duplicated.
+
 Version 0.0.4
 =============
 - Fix some bugs with blueprint without entities or clicking on the icon
