@@ -1,10 +1,10 @@
 {
   "name": "BlueprintAlignment",
-  "version": "0.0.5",
-  "factorio_version": "0.17",
+  "version": "0.0.6",
+  "factorio_version": "0.18",
   "title": "Blueprint Alignment",
   "author": "steffenk",
   "homepage": "https://github.com/steffen-kiess/factorio-BlueprintAlignment",
-  "dependencies": ["base >= 0.17.0"],
+  "dependencies": ["base >= 0.18.0"],
   "description": "Allows enforcing a certain alignment for some blueprints."
 }
