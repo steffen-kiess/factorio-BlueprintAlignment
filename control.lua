@@ -101,11 +101,8 @@ script.on_event(defines.events.on_put_item, function (event)
     position = pos,
     force_build = event.shift_build,
     direction = event.direction,
+    by_player = player
   })
-  -- Raise on_build_entity for all created (ghost) entities. This will also remove the BlueprintAlignment-Info ghost (and hopefully similar ghosts from other mods)
-  for _, entity in pairs(ghosts) do
-    script.raise_event(defines.events.on_built_entity, { created_entity = entity, player_index = player.index, stack = nil })
-  end
 
   -- Suppress the normal blueprint building by replacing the blueprint with a temporary item
   local stack = find_empty_stack(player)
@@ -141,8 +138,13 @@ script.on_event(defines.events.on_built_entity, function (event)
   --if entity.valid and entity.type == "entity-ghost" then
   --  player.print ('BUILD ' .. entity.ghost_name)
   --end
-  if entity.valid and entity.type == "entity-ghost" and entity.ghost_name == "BlueprintAlignment-Info" then
+  if entity.valid then
     entity.destroy()
     --player.print ('Removing ghost')
   end
-end)
+end, {
+  {
+    filter = "ghost_name",
+    ghost_name = "BlueprintAlignment-Info"
+  }
+})
