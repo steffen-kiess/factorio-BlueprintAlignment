@@ -145,6 +145,6 @@ script.on_event(defines.events.on_built_entity, function (event)
 end, {
   {
     filter = "ghost_name",
-    ghost_name = "BlueprintAlignment-Info"
+    name = "BlueprintAlignment-Info"
   }
 })
