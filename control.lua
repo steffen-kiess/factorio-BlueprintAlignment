@@ -41,7 +41,7 @@ end
 
 
 -- If this is an aligned build request, intercept the build request and force it to the properly aligned position
-script.on_event(defines.events.on_put_item, function (event)
+script.on_event(defines.events.on_pre_build, function (event)
   local player = game.players[event.player_index]
   -- player.print ("PI " .. event.tick .. " " .. serpent.block(event.position) .. " " .. serpent.block(event.shift_build) .. " " .. serpent.block(event.created_by_moving) .. " " .. serpent.block(event.direction))
 
@@ -95,7 +95,9 @@ script.on_event(defines.events.on_put_item, function (event)
   pos.x = math.floor((pos.x - offsetx) / parsed.Align[1] + 0.5) * parsed.Align[1] + offsetx
   pos.y = math.floor((pos.y - offsety) / parsed.Align[2] + 0.5) * parsed.Align[2] + offsety
 
-  local ghosts = player.cursor_stack.build_blueprint({
+  -- player.print ("BUILD: " .. serpent.block(event.position.x) .. " " .. serpent.block(event.position.y) .. " " .. serpent.block(pos.x) .. " " .. serpent.block(pos.y) .. " " .. serpent.block(parsed.Center[1]) .. " " .. serpent.block(parsed.Center[2]) .. serpent.block(parsed.Align[1]) .. " " .. serpent.block(parsed.Align[2]) .. " " .. serpent.block(offsetx) .. " " .. serpent.block(offsety))
+
+  local ghosts = blueprint.build_blueprint({
     surface = player.surface,
     force = player.force,
     position = pos,

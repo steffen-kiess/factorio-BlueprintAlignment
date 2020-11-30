@@ -1,4 +1,5 @@
 alignment_attribute = require ("alignment_attribute")
+mod_gui = require("mod-gui")
 require ("util")
 require ("serpent")
 require ("mod-gui")
