@@ -7,7 +7,7 @@ Version: 1.1.0
   Notes:
     - Alignment of blueprints containing rails is currently broken when the alignment center is at an odd position.
     - The alignment GUI is somewhat broken currently, especially when working with blueprint books.
-    This probably won't get fixed as the builtin functionality is better anyway.
+    - This probably won't get fixed as the builtin functionality is better anyway.
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.18.0
